@@ -1,3 +1,3 @@
 # linter-erlang package
 
-Simple erlang linter that actually works. You need erlc installed.
+Simple atom.io erlang linter that actually works. You need erlc installed.
