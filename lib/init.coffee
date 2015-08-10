@@ -40,13 +40,13 @@ module.exports =
         return new Promise (resolve, reject) =>
           filePath = textEditor.getPath()
           compile_result = ""
-          foobar = ["-Wall"]
+          erlc_args = ["-Wall"]
           project_path = atom.project.getPaths()
-          foobar.push filePath
-          foobar.push "-I", dir.trim() for dir in @includeDirs.split(" ")
-          foobar.push "-pa", pa.trim() for pa in @paPaths.split(" ") unless @paPaths == ""
-          ## This fun will parse the row and split stuff nicely
+          erlc_args.push "-I", dir.trim() for dir in @includeDirs.split(" ")
+          erlc_args.push "-pa", pa.trim() for pa in @paPaths.split(" ") unless @paPaths == ""
+          erlc_args.push filePath
           error_stack = []
+          ## This fun will parse the row and split stuff nicely
           parse_row = (row) ->
             row_splittreedA = row.slice(0, row.indexOf(":"))
             re = /[\w\/.]+:(\d+):(.+)/
@@ -63,7 +63,7 @@ module.exports =
               range: helpers.rangeFromLineNumber(textEditor, linenr - 1)
           process = new BufferedProcess
             command: @executablePath
-            args: foobar
+            args: erlc_args 
             options:
               cwd: project_path[0] # Should use better folder perhaps
             stdout: (data) ->
