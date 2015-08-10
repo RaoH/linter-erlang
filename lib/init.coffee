@@ -16,7 +16,7 @@ module.exports =
     paPaths:
       type: 'string'
       title: 'pa paths'
-      default: ""
+      default: "./ebin"
       description: "Paths seperated by space"
   activate: ->
     @subscriptions = new CompositeDisposable
@@ -44,6 +44,7 @@ module.exports =
           project_path = atom.project.getPaths()
           erlc_args.push "-I", dir.trim() for dir in @includeDirs.split(" ")
           erlc_args.push "-pa", pa.trim() for pa in @paPaths.split(" ") unless @paPaths == ""
+          erlc_args.push "-o", "/tmp"
           erlc_args.push filePath
           error_stack = []
           ## This fun will parse the row and split stuff nicely
@@ -63,7 +64,7 @@ module.exports =
               range: helpers.rangeFromLineNumber(textEditor, linenr - 1)
           process = new BufferedProcess
             command: @executablePath
-            args: erlc_args 
+            args: erlc_args
             options:
               cwd: project_path[0] # Should use better folder perhaps
             stdout: (data) ->

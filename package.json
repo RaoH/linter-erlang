@@ -1,7 +1,7 @@
 {
   "name": "linter-erlang",
   "main": "./lib/init",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple erlang linter",
   "repository": "https://github.com/RaoH/linter-erlang.git",
   "license": "MIT",
