@@ -52,7 +52,7 @@ module.exports =
             row_splittreedA = row.slice(0, row.indexOf(":"))
             re = /[\w\/.]+:(\d+):(.+)/
             re_result = re.exec(row)
-            if re_result[2].trim().startsWith("Warning")
+            if !re_result? and re_result[2].trim().startsWith("Warning")
               error_type = "Warning"
             else
               error_type = "Error"
@@ -72,7 +72,7 @@ module.exports =
             exit: (code) ->
               errors = compile_result.split("\n")
               errors.pop()
-              parse_row error for error in errors
+              parse_row error for error in errors unless !errors?
               resolve error_stack
           process.onWillThrowError ({error,handle}) ->
             atom.notifications.addError "Failed to run #{@executablePath}",
