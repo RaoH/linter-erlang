@@ -1,6 +1,7 @@
 {BufferedProcess, CompositeDisposable} = require 'atom'
 path = require 'path'
 helpers = require('atom-linter')
+os = require 'os'
 
 module.exports =
   config:
@@ -44,22 +45,26 @@ module.exports =
           project_path = atom.project.getPaths()
           erlc_args.push "-I", dir.trim() for dir in @includeDirs.split(" ")
           erlc_args.push "-pa", pa.trim() for pa in @paPaths.split(" ") unless @paPaths == ""
-          erlc_args.push "-o", "/tmp"
+          erlc_args.push "-o", os.tmpDir()
           erlc_args.push filePath
           error_stack = []
           ## This fun will parse the row and split stuff nicely
           parse_row = (row) ->
-            row_splittreedA = row.slice(0, row.indexOf(":"))
-            re = /[\w\/.]+:(\d+):(.+)/
-            re_result = re.exec(row)
-            if !re_result? and re_result[2].trim().startsWith("Warning")
-              error_type = "Warning"
-            else
+            if row.indexOf("Module name") != -1
+              error_msg = row.split(":")[1]
+              linenr = 1
               error_type = "Error"
-            linenr = parseInt(re_result[1], 10)
+            else
+              row_splittreedA = row.slice(0, row.indexOf(":"))
+              re = /[\w\/.]+:(\d+):(.+)/
+              re_result = re.exec(row)
+              error_type = if re_result? and
+                re_result[2].trim().startsWith("Warning") then "Warning" else "Error"
+              linenr = parseInt(re_result[1], 10)
+              error_msg = re_result[2].trim()
             error_stack.push
               type: error_type
-              text: re_result[2].trim()
+              text: error_msg
               filePath: filePath
               range: helpers.rangeFromLineNumber(textEditor, linenr - 1)
           process = new BufferedProcess
