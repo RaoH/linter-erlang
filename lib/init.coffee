@@ -2,6 +2,7 @@
 path = require 'path'
 helpers = require('atom-linter')
 os = require 'os'
+fs = require 'fs'
 
 module.exports =
   config:
@@ -40,14 +41,25 @@ module.exports =
       lint: (textEditor) =>
         return new Promise (resolve, reject) =>
           filePath = textEditor.getPath()
+          project_path = atom.project.getPaths()
+          project_deps_ebin = ""
+
+          fs.readdirSync(project_path.toString() + "/deps/").filter(
+            (item) ->
+              project_deps_ebin = project_deps_ebin + " ./deps/" + item + "/ebin/"
+          )
+
+          @paPaths = @paPaths + project_deps_ebin
+
           compile_result = ""
           erlc_args = ["-Wall"]
-          project_path = atom.project.getPaths()
           erlc_args.push "-I", dir.trim() for dir in @includeDirs.split(" ")
           erlc_args.push "-pa", pa.trim() for pa in @paPaths.split(" ") unless @paPaths == ""
           erlc_args.push "-o", os.tmpDir()
           erlc_args.push filePath
+
           error_stack = []
+
           ## This fun will parse the row and split stuff nicely
           parse_row = (row) ->
             if row.indexOf("Module name") != -1
