@@ -6,7 +6,7 @@
   "repository": "https://github.com/RaoH/linter-erlang.git",
   "license": "MIT",
   "dependencies": {
-    "atom-linter": "^3.1.0"
+    "atom-linter": "^3.2.2"
   },
   "providedServices": {
     "linter": {
