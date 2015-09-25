@@ -20,6 +20,11 @@ module.exports =
       title: 'pa paths'
       default: "./ebin"
       description: "Paths seperated by space"
+    depsPath:
+      type: 'string'
+      title: 'Deps dir'
+      default: "deps"
+      description: "Path to deps directory. No . or /"
   activate: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.config.observe 'linter-erlang.executablePath',
@@ -31,6 +36,9 @@ module.exports =
     @subscriptions.add atom.config.observe 'linter-erlang.paPaths',
       (paPaths) =>
         @paPaths = paPaths
+    @subscriptions.add atom.config.observe 'linter-erlang.depsPath',
+      (depsPath) =>
+        @depsPath = depsPath
   deactivate: ->
     @subscriptions.dispose()
   provideLinter: ->
@@ -43,10 +51,11 @@ module.exports =
           filePath = textEditor.getPath()
           project_path = atom.project.getPaths()
           project_deps_ebin = ""
+          depsDir = @depsPath
 
-          fs.readdirSync(project_path.toString() + "/deps/").filter(
+          fs.readdirSync(project_path.toString() + "/" + depsDir + "/").filter(
             (item) ->
-              project_deps_ebin = project_deps_ebin + " ./deps/" + item + "/ebin/"
+              project_deps_ebin = project_deps_ebin + " ./" + depsDir + "/" + item + "/ebin/"
           )
 
           @paPaths = @paPaths + project_deps_ebin
