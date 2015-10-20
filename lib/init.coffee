@@ -44,10 +44,12 @@ module.exports =
           project_path = atom.project.getPaths()
           project_deps_ebin = ""
 
-          fs.readdirSync(project_path.toString() + "/deps/").filter(
-            (item) ->
-              project_deps_ebin = project_deps_ebin + " ./deps/" + item + "/ebin/"
-          )
+          try
+            fs.readdirSync(project_path.toString() + "/deps/").filter(
+              (item) ->
+                project_deps_ebin = project_deps_ebin + " ./deps/" + item + "/ebin/"
+            )
+          catch error
 
           @paPaths = @paPaths + project_deps_ebin
 
