@@ -68,17 +68,17 @@ module.exports =
               error_type = "Error"
             else
               row_splittreedA = row.slice(0, row.indexOf(":"))
-              re = /[\w\/.]+:(\d+):(.+)/
+              re = /[\w\/.]+:(\d+):\ (.+)/
               re_result = re.exec(row)
-              error_type = if re_result? and
-                re_result[2].trim().startsWith("Warning") then "Warning" else "Error"
-              linenr = parseInt(re_result[1], 10)
-              error_msg = re_result[2].trim()
-            error_stack.push
-              type: error_type
-              text: error_msg
-              filePath: filePath
-              range: helpers.rangeFromLineNumber(textEditor, linenr - 1)
+              if re_result != null
+                error_type = if re_result[2].trim().startsWith("Warning") then "Warning" else "Error"
+                linenr = parseInt(re_result[1], 10)
+                error_msg = re_result[2].trim()
+                error_stack.push
+                  type: error_type
+                  text: error_msg
+                  filePath: filePath
+                  range: helpers.rangeFromLineNumber(textEditor, linenr - 1)
           process = new BufferedProcess
             command: @executablePath
             args: erlc_args
